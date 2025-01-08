@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.AmbientLight?>
+<?import javafx.scene.ParallelCamera?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<VBox maxWidth="850.0" prefHeight="531.0" prefWidth="742.0" styleClass="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ensetchat.ChatController">
+    <children>
+        <!-- En-tête avec logo et bouton nouvelle conversation -->
+        <HBox alignment="CENTER" maxWidth="800.0" prefHeight="82.0" prefWidth="800.0" spacing="15" styleClass="header">
+            <children>
+                <!-- Logo -->
+                <ImageView fitHeight="40" fitWidth="321.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@images/ENSET.png" />
+                </ImageView>
+
+                <!-- Bouton nouvelle conversation -->
+                <Button minWidth="29.0" onAction="#newConversation" prefHeight="29.0" prefWidth="29.0" styleClass="new-chat-btn">
+                    <graphic>
+                        <SVGPath content="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="white" />
+                    </graphic>
+                </Button>
+            </children>
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+        </HBox>
+
+        <!-- Zone principale -->
+        <HBox maxHeight="513.0" maxWidth="734.0" prefHeight="507.0" prefWidth="734.0" spacing="20" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <children>
+                <!-- Zone historique des conversations -->
+                <VBox prefHeight="3514.0" prefWidth="154.0" styleClass="history-panel">
+                    <Label prefHeight="50.0" prefWidth="113.0" styleClass="section-header" text="Historiques" />
+                    <ListView fx:id="listView_conversations" maxHeight="-Infinity" maxWidth="250.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="355.0" prefWidth="178.0" styleClass="conversations-list" VBox.vgrow="ALWAYS" />
+                </VBox>
+
+                <!-- Zone de chat -->
+                <VBox prefHeight="513.0" prefWidth="860.0" styleClass="chat-panel" HBox.hgrow="ALWAYS">
+                    <ListView fx:id="listView_chat" editable="true" maxHeight="450.0" maxWidth="900.0" minWidth="-Infinity" prefHeight="409.0" prefWidth="504.0" styleClass="chat-messages" VBox.vgrow="ALWAYS" />
+
+                    <!-- Zone de saisie -->
+                    <HBox alignment="CENTER" prefHeight="0.0" prefWidth="1545.0" spacing="10" styleClass="message-input-zone">
+                        <padding>
+                            <Insets top="15" />
+                        </padding>
+                        <children>
+                            <TextField fx:id="textArea_messageBox" onKeyPressed="#sendMethod" promptText="Entrez votre message..." styleClass="message-input" HBox.hgrow="ALWAYS">
+                                <padding>
+                                    <Insets bottom="20.0" />
+                                </padding></TextField>
+                            <Button onAction="#attachFile" prefHeight="26.0" prefWidth="23.0" styleClass="attach-btn">
+                                <graphic>
+                                    <SVGPath content="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z" fill="white" />
+                                </graphic>
+                            </Button>
+                            <Button fx:id="button_send" onAction="#sendButtonAction" styleClass="send-btn">
+                                <graphic>
+                                    <SVGPath content="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="white" />
+                                </graphic>
+                            </Button>
+                        </children>
+                    </HBox>
+                </VBox>
+            </children>
+        </HBox>
+        <ParallelCamera />
+        <AmbientLight color="CHARTREUSE" lightOn="true" />
+    </children>
+</VBox>
