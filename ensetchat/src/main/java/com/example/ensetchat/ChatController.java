@@ -5,6 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
+import javafx.scene.control.cell.TextFieldListCell;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -21,12 +22,16 @@ public class ChatController {
     private TextField textArea_messageBox;
     @FXML
     private Button button_send;
+    @FXML
+    private Button clearConversationButton;
+
 
     private HashMap<String, List<String>> conversationsHistory = new HashMap<>();
     private List<String> messages = new ArrayList<>();
     private List<String> conversations = new ArrayList<>();
     private String currentConversation = null;
     private static final String SAVE_FILE_PATH = "conversations.dat";
+    private static final int MAX_MESSAGE_LENGTH = 70;
 
     @FXML
     public void initialize() {
@@ -39,61 +44,69 @@ public class ChatController {
             listView_chat.getItems().addAll(messages);
         }
 
-        // Context menu for chat messages
-        ContextMenu chatContextMenu = new ContextMenu();
-        MenuItem editChatItem = new MenuItem("Modifier le message");
+        listView_chat.setCellFactory(TextFieldListCell.forListView());
+        listView_chat.setEditable(true);
 
-        editChatItem.setOnAction(event -> {
-            int selectedIndex = listView_chat.getSelectionModel().getSelectedIndex();
-            if (selectedIndex != -1) {
-                String oldMessage = messages.get(selectedIndex);
-                TextInputDialog dialog = new TextInputDialog(oldMessage);
-                dialog.setTitle("Modifier le message");
-                dialog.setHeaderText("Entrez le nouveau message:");
-                Optional<String> result = dialog.showAndWait();
-                result.ifPresent(newMessage -> {
-                    messages.set(selectedIndex, newMessage);
-                    listView_chat.getItems().set(selectedIndex, newMessage);
-                    saveConversations();
-                });
-            }
-        });
-        chatContextMenu.getItems().addAll(editChatItem);
-        listView_chat.setContextMenu(chatContextMenu);
+        listView_chat.setOnEditCommit(event -> {
+            int editedIndex = event.getIndex();
+            String newMessage = event.getNewValue();
 
-        // Context menu for conversations
-        ContextMenu conversationContextMenu = new ContextMenu();
-        MenuItem deleteConversationItem = new MenuItem("Supprimer la conversation");
+            if (!messages.get(editedIndex).startsWith("IA :")) {
+                messages.set(editedIndex, newMessage);
 
-        deleteConversationItem.setOnAction(event -> {
-            int selectedIndex = listView_conversations.getSelectionModel().getSelectedIndex();
-            if (selectedIndex != -1) {
-                String conversationToDelete = conversations.get(selectedIndex);
-                conversations.remove(selectedIndex);
-                conversationsHistory.remove(conversationToDelete);
-                listView_conversations.getItems().remove(selectedIndex);
+                int aiResponseIndex = editedIndex + 1;
+                if (aiResponseIndex < messages.size() && messages.get(aiResponseIndex).startsWith("IA :")) {
+                    messages.remove(aiResponseIndex);
+                    listView_chat.getItems().remove(aiResponseIndex);
+                    simulateAIResponse(true);
+                }
+                conversationsHistory.put(currentConversation, messages);
                 saveConversations();
 
-                // Clear messages when a conversation is deleted
-                messages.clear();
-                listView_chat.getItems().clear();
+            } else {
+                listView_chat.getItems().set(editedIndex, messages.get(editedIndex));
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information");
+                alert.setHeaderText(null);
+                alert.setContentText("Les messages de l'IA ne peuvent pas être modifiés.");
+                alert.showAndWait();
             }
         });
 
-        conversationContextMenu.getItems().addAll(deleteConversationItem);
-        listView_conversations.setContextMenu(conversationContextMenu);
-
-        // Add listener for conversation selection
         listView_conversations.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     if (newValue != null) {
                         currentConversation = newValue;
                         messages = conversationsHistory.getOrDefault(currentConversation, new ArrayList<>());
                         listView_chat.getItems().clear();
-                        listView_chat.getItems().addAll(messages);
+                        for (String message : messages) {
+                            listView_chat.getItems().add(formatMessage(message));
+                        }
                     }
                 }
         );
+
+        listView_chat.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setWrapText(true);
+                    setPrefWidth(item.length() > MAX_MESSAGE_LENGTH ? 500 : 300);
+                    if (item.startsWith("Utilisateur :")) {
+                        setStyle("-fx-background-color: #e6f2ff; -fx-alignment: center-right;");
+                    } else if (item.startsWith("IA :")) {
+                        setStyle("-fx-background-color: #f0f0f0; -fx-alignment: center-left;");
+                    }
+                }
+            }
+        });
+
+        clearConversationButton.setOnAction(event -> clearHistory());
     }
 
     private void loadConversations() {
@@ -139,12 +152,37 @@ public class ChatController {
 
         String message = textArea_messageBox.getText();
         if (!message.isEmpty()) {
-            messages.add(message);
-            listView_chat.getItems().add(message);
+            String formattedMessage = "Utilisateur : " + message;
+            messages.add(formattedMessage);
+            listView_chat.getItems().add(formatMessage(formattedMessage));
             conversationsHistory.put(currentConversation, messages);
             saveConversations();
+
+            simulateAIResponse(false);
             textArea_messageBox.clear();
         }
+    }
+
+    private void simulateAIResponse(boolean modifyResponse) {
+        String aiResponse = modifyResponse ? "IA : La réponse a été modifiée suite à la modification du message utilisateur." : "IA : Voici la réponse à votre message.";
+        messages.removeIf(msg -> msg.startsWith("IA :"));
+        messages.add(aiResponse);
+        listView_chat.getItems().add(formatMessage(aiResponse));
+        conversationsHistory.put(currentConversation, messages);
+        saveConversations();
+    }
+
+    private String formatMessage(String message) {
+        StringBuilder formattedMessage = new StringBuilder();
+        int length = message.length();
+        for (int i = 0; i < length; i += MAX_MESSAGE_LENGTH) {
+            if (i + MAX_MESSAGE_LENGTH < length) {
+                formattedMessage.append(message, i, i + MAX_MESSAGE_LENGTH).append("\n");
+            } else {
+                formattedMessage.append(message.substring(i));
+            }
+        }
+        return formattedMessage.toString();
     }
 
     @FXML
@@ -160,16 +198,44 @@ public class ChatController {
             listView_chat.getItems().add("Pièce jointe : " + filePath);
             conversationsHistory.put(currentConversation, messages);
             saveConversations();
+
+            // Ajouter une question ou description après l'importation du fichier
+            String question = "Utilisateur : Veuillez poser une question ou donner une description concernant ce fichier.";
+            messages.add(question);
+            listView_chat.getItems().add(formatMessage(question));
+            conversationsHistory.put(currentConversation, messages);
+            saveConversations();
         }
     }
 
     @FXML
     private void clearHistory() {
         if (currentConversation != null) {
-            messages.clear();
-            listView_chat.getItems().clear();
-            conversationsHistory.put(currentConversation, messages);
-            saveConversations();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation");
+            alert.setHeaderText("Supprimer la conversation ?");
+            alert.setContentText("Êtes-vous sûr de vouloir supprimer toute la conversation ? Cette action est irréversible.");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                messages.clear();
+                listView_chat.getItems().clear();
+                conversationsHistory.remove(currentConversation);
+                conversations.remove(currentConversation);
+                listView_conversations.getItems().remove(currentConversation);
+
+                if (!conversations.isEmpty()) {
+                    currentConversation = conversations.get(0);
+                    messages = conversationsHistory.getOrDefault(currentConversation, new ArrayList<>());
+                    listView_chat.getItems().addAll(messages);
+                } else {
+                    currentConversation = null;
+                    messages = new ArrayList<>();
+                }
+
+                saveConversations();
+            }
+
         }
     }
 
@@ -187,6 +253,7 @@ public class ChatController {
                 messages = new ArrayList<>();
                 conversationsHistory.put(conversationName, messages);
                 listView_chat.getItems().clear();
+                listView_chat.getItems().addAll(messages);
                 saveConversations();
             }
         });

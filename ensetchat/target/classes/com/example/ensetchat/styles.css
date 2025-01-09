@@ -1,31 +1,34 @@
 .root {
-    -fx-background-color: #f4f4f4; /* Gris clair pour l'arrière-plan principal */
-    -fx-font-family: "Segoe UI", sans-serif; /* Police moderne */
+    -fx-background-color: #f4f4f4;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-min-width: 800px;
+    -fx-min-height: 600px;
 }
 
 .header {
-    -fx-background-color: #2c3e50; /* Bleu foncé pour l'en-tête */
+    -fx-background-color: #2c3e50;
     -fx-padding: 15;
+    -fx-alignment: center-left;
+    -fx-spacing: 15;
 }
 
 .new-chat-btn, .send-btn, .attach-btn {
-    -fx-background-color: #3498db; /* Bleu clair pour les boutons */
+    -fx-background-color: #3498db;
     -fx-text-fill: white;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
-    -fx-padding: 5 10; /* Espacement interne du bouton */
-    -fx-cursor: hand; /* Curseur main au survol */
-    -fx-border-color: transparent; /* Supprime la bordure du bouton*/
+    -fx-padding: 5 10;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-max-width: 40px;
+    -fx-max-height: 40px;
 }
 
-
-
-.new-chat-btn:hover, .send-btn:hover, .attach-btn:hover{
-    -fx-background-color: #2980b9; /* Bleu plus foncé au survol */
-
+.new-chat-btn:hover, .send-btn:hover, .attach-btn:hover {
+    -fx-background-color: #2980b9;
 }
-
-
 
 .section-header {
     -fx-font-size: 18px;
@@ -39,129 +42,99 @@
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-padding: 15;
-    -fx-effect: drop-shadow(rgba(0,0,0,0.1) 10px 0px 1px);
-    box-shadow: 0px 1px 10px rgba(0,0,0,0.1); /* Fallback, approximate */;
-
-
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 1);
+    -fx-min-width: 200px;
+    -fx-pref-width: 250px;
+    -fx-max-width: 300px;
 }
-
-.conversations-list {
-    -fx-background-color: transparent;
-
-}
-
-
 
 .chat-panel {
-
     -fx-background-color: white;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-padding: 15;
-
-    -fx-effect: drop-shadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 1);
-
-
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 1);
+    -fx-min-width: 400px;
 }
 
-
-.chat-messages {
+.chat-messages, .conversations-list {
     -fx-background-color: transparent;
-
+    -fx-background-insets: 0;
+    -fx-padding: 5;
 }
-
-
 
 .chat-messages .list-cell {
     -fx-padding: 10;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
-
+    -fx-wrap-text: true;
+    -fx-max-width: 350px; /* Ajuster si nécessaire */
 }
 
-
-/* Styles des messages de l'utilisateur */
 .chat-messages .list-cell:even {
-    -fx-background-color: #e6f2ff; /* Bleu très clair */
-    -fx-alignment: center-right; /* Aligner à droite */
+    -fx-background-color: #e6f2ff;
+    -fx-alignment: center-right;
 }
 
-/* Styles des messages des autres */
 .chat-messages .list-cell:odd {
-    -fx-background-color: #f0f0f0; /* Gris très clair */
-    -fx-alignment: center-left; /* Aligner à gauche */
+    -fx-background-color: #f0f0f0;
+    -fx-alignment: center-left;
 }
-
-
 
 .message-input-zone {
-    -fx-background-color: #e0e0e0; /* Gris clair pour la zone de saisie */
-    -fx-border-radius: 10 10 0 0; /* coins arrondis */
+    -fx-background-color: #e0e0e0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
     -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-alignment: center;
 }
 
-
 .message-input {
-
     -fx-background-color: white;
     -fx-border-radius: 20;
     -fx-background-radius: 20;
     -fx-padding: 10;
     -fx-border-color: #bdc3c7;
     -fx-border-width: 1px;
-
+    -fx-pref-height: 40px;
 }
-
-.heading { /* Pour le label dans hello-view.fxml, si utilisé */
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #333;
-}
-
-
-/*Scrollbar*/
-
-
-.scrollbar {
-    -fx-background-color: transparent;
-}
-.scrollbar .track {
-    -fx-background-color: transparent;
-
-}
-.scrollbar .thumb {
-    -fx-background-color: #d3d3d3;
-    -fx-background-radius: 5px;
-}
-
-.scrollbar .thumb:hover {
-    -fx-background-color: #a9a9a9;
-}
-.scrollbar .thumb:pressed {
-    -fx-background-color: #808080;
-}
-
-
-
-
-/*Liste des conversations*/
 
 .conversations-list .list-cell {
     -fx-padding: 10;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
-    -fx-background-color: #ffffff; /* Couleur du fond de la ligne */
-    -fx-border-color:  #f4f4f4; /* Couleur de la bordure */
+    -fx-background-color: #ffffff;
+    -fx-border-color: #f4f4f4;
     -fx-border-width: 1px;
-
 }
 
-
-/*Style du listview conversations */
 .conversations-list .list-cell:hover {
-    -fx-background-color: #e0f2f2;  /* Couleur plus claire au survol */
+    -fx-background-color: #e0f2f2;
 }
 
 .conversations-list .list-cell:selected {
-    -fx-background-color: #b2d8d8; /* Couleur plus foncée quand sélectionné */
+    -fx-background-color: #b2d8d8;
+}
+
+/* Scrollbar styling */
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .thumb,
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #d3d3d3;
+    -fx-background-radius: 5px;
+}
+
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #a9a9a9;
+}
+
+.scroll-bar:vertical .thumb:pressed,
+.scroll-bar:horizontal .thumb:pressed {
+    -fx-background-color: #808080;
 }
